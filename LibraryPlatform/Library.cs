@@ -6,7 +6,7 @@ public class Library
 
     public void AddBook(string name)
     {
-        int freeSlot = Array.FindIndex(Books, s => string.IsNullOrEmpty(s));
+        int freeSlot = Array.FindIndex(Books, string.IsNullOrEmpty);
 
         if (freeSlot < 0)
         {
@@ -46,5 +46,10 @@ public class Library
         {
             Console.WriteLine("You don't have any books in your library.");
         }
+    }
+
+    public int CountBooksInLibrary()
+    {
+        return Books.Where(s => !string.IsNullOrEmpty(s)).ToArray().Length;
     }
 }
