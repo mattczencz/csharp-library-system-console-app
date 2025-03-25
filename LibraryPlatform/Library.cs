@@ -2,11 +2,11 @@
 
 public class Library
 {
-    public string[] Books { get; } = new string[5];
+    public Book?[] Books { get; } = [ null, null, null, null, null ];
 
     public void AddBook(string name)
     {
-        int freeSlot = Array.FindIndex(Books, string.IsNullOrEmpty);
+        int freeSlot = Array.FindIndex(Books, book => book == null);
 
         if (freeSlot < 0)
         {
@@ -14,12 +14,12 @@ public class Library
             return;
         }
 
-        Books[freeSlot] = name;
+        Books[freeSlot] = new Book(name);
     }
 
     public void RemoveBook(string name)
     {
-        int bookIndex = Array.FindIndex(Books, s => s == name);
+        int bookIndex = Array.FindIndex(Books, book => book?.Title == name);
 
         if (bookIndex < 0)
         {
@@ -27,19 +27,19 @@ public class Library
             return;
         }
 
-        Books[bookIndex] = "";
+        Books[bookIndex] = null;
     }
 
     public void DisplayBooks()
     {
-        string[] booksWithTitle = Books.Where(s => !string.IsNullOrEmpty(s)).ToArray();
+        Book?[] booksWithTitle = Books.Where(book => book != null).ToArray();
 
         if (booksWithTitle.Length > 0)
         {
             Console.WriteLine("================ Books in your library ================");
             foreach (var book in booksWithTitle)
             {
-                Console.WriteLine(book);
+                Console.WriteLine(book.Title);
             }
         }
         else
@@ -50,6 +50,51 @@ public class Library
 
     public int CountBooksInLibrary()
     {
-        return Books.Where(s => !string.IsNullOrEmpty(s)).ToArray().Length;
+        return Books.Where(book => book != null).ToArray().Length;
+    }
+
+    public bool IsBookInLibrary(string name)
+    {
+        return Array.Find(Books, book => book?.Title == name) != null;
+    }
+
+    public bool CheckoutBook(string name)
+    {
+        Book? book = Array.Find(Books, book => book?.Title == name);
+
+        if (book == null)
+        {
+            Console.WriteLine("Could not find that book to checkout.");
+            return false;
+        }
+
+        if (book.CheckedOut)
+        {
+            Console.WriteLine("This book is already checked out.");
+            return false;
+        }
+
+        book.CheckedOut = true;
+        return true;
+    }
+    
+    public bool CheckinBook(string name)
+    {
+        Book? book = Array.Find(Books, book => book?.Title == name);
+
+        if (book == null)
+        {
+            Console.WriteLine("That book was never in the library.");
+            return false;
+        }
+
+        if (!book.CheckedOut)
+        {
+            Console.WriteLine("This book is already checked in.");
+            return false;
+        }
+
+        book.CheckedOut = false;
+        return true;
     }
 }
